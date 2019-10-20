@@ -1,0 +1,5 @@
+torch==1.2.0
+numpy
+librosa
+scipy
+tensorboardX

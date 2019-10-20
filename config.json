@@ -1,0 +1,30 @@
+{
+    "num_gpus": 1,
+    "batch_size": 8,
+    "learning_rate": 0.0001,
+    "adam_b1": 0.5,
+    "adam_b2": 0.9,
+
+    "seed": 1234,
+
+    "#segment_size": 16384,
+    "segment_size": 8192,
+
+    "num_mels": 80,
+    "num_freq": 1025,
+    "n_fft": 1024,
+    "hop_size": 256,
+    "win_size": 1024,
+
+    "sampling_rate": 22050,
+
+    "fmin": 55,
+    "fmax": 9000,
+
+    "num_workers": 4,
+
+    "dist_config": {
+        "dist_backend": "nccl",
+        "dist_url": "tcp://localhost:54321"
+    }
+}
