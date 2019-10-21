@@ -64,9 +64,9 @@ class Discriminator(torch.nn.Module):
         super(Discriminator, self).__init__()
         self.conv_pre = weight_norm(Conv1d(1, 16, 15, 1, padding=7))
         self.grouped_convs = nn.ModuleList([
-            weight_norm(Conv1d(16, 64, 41, 1, groups=4, padding=20)),
-            weight_norm(Conv1d(64, 256, 41, 1, groups=16, padding=20)),
-            weight_norm(Conv1d(256, 1024, 41, 1, groups=64, padding=20)),
+            weight_norm(Conv1d(16, 64, 41, 4, groups=4, padding=20)),
+            weight_norm(Conv1d(64, 256, 41, 4, groups=16, padding=20)),
+            weight_norm(Conv1d(256, 1024, 41, 4, groups=64, padding=20)),
             weight_norm(Conv1d(1024, 1024, 41, 1, groups=256, padding=20)),
         ])
         self.conv_post1 = weight_norm(Conv1d(1024, 1024, 5, 1, padding=2))
@@ -140,8 +140,8 @@ def discriminator_loss(disc_real_outputs, disc_generated_outputs):
         generated_loss = torch.mean((dg[0])**2)
         total_disc_loss = real_loss + generated_loss
         loss += total_disc_loss
-        r_losses.append(real_loss)
-        g_losses.append(generated_loss)
+        r_losses.append(real_loss.item())
+        g_losses.append(generated_loss.item())
 
     return loss, r_losses, g_losses
 
