@@ -47,7 +47,7 @@ def mel_spectrogram(y, n_fft, num_mels, sampling_rate, hop_size, win_size, fmin,
 
     y = np.pad(y, (int((n_fft-hop_size)/2), int((n_fft-hop_size)/2))
                , 'constant', constant_values=(0, 0))
-    spec = librosa.feature.melspectrogram(y, hop_length=hop_size, win_length=win_size, center=center,
+    spec = librosa.feature.melspectrogram(y, hop_length=hop_size, win_length=win_size, center=center, power=1,
                                           sr=sampling_rate, n_fft=n_fft, n_mels=num_mels, fmin=fmin, fmax=fmax)
 
     magnitudes = np.abs(spec)
