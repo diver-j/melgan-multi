@@ -99,8 +99,8 @@ class MultiScaleDiscriminator(torch.nn.Module):
             Discriminator(),
         ])
         self.meanpools = nn.ModuleList([
-            AvgPool1d(4, 2, padding=get_padding(4)),
-            AvgPool1d(4, 4, padding=get_padding(4))
+            AvgPool1d(4, 2, padding=2),
+            AvgPool1d(4, 4, padding=2)
         ])
 
     def forward(self, y, y_hat):
@@ -109,15 +109,13 @@ class MultiScaleDiscriminator(torch.nn.Module):
         fmap_rs = []
         fmap_gs = []
         for i, d in enumerate(self.discriminators):
-            if i == 0:
-                y_d_r, fmap_r = d(y)
-                y_d_g, fmap_g = d(y_hat)
-            else:
-                y_d_r, fmap_r = d(self.meanpools[i-1](y))
-                y_d_g, fmap_g = d(self.meanpools[i-1](y_hat))
+            if i != 0:
+                y = self.meanpools[i-1](y)
+                y_hat = self.meanpools[i-1](y_hat)
+            y_d_r, fmap_r = d(y)
+            y_d_g, fmap_g = d(y_hat)
             y_d_rs.append(y_d_r)
             fmap_rs.append(fmap_r)
-
             y_d_gs.append(y_d_g)
             fmap_gs.append(fmap_g)
 

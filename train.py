@@ -8,9 +8,10 @@ import torch
 from tensorboardX import SummaryWriter
 from torch.utils.data import DistributedSampler, DataLoader
 from env import AttrDict, build_env
-from meldataset import MelDataset
+from meldataset import MelDataset, mel_spectrogram
 from distributed import init_distributed, apply_gradient_allreduce, reduce_tensor
 from models import Generator, MultiScaleDiscriminator, feature_loss, generator_loss, discriminator_loss
+from utils import plot_spectrogram
 
 h = None
 device = None
@@ -61,7 +62,7 @@ def fit(a, epochs):
         training_files = [os.path.join(a.input_wavs_dir, x.split('|')[0] + '.wav')
                           for x in fi.read().split('\n') if len(x) > 0]
 
-    with open(a.input_train_metafile, 'r', encoding='utf-8') as fi:
+    with open(a.input_valid_metafile, 'r', encoding='utf-8') as fi:
         validation_files = [os.path.join(a.input_wavs_dir, x.split('|')[0] + '.wav')
                             for x in fi.read().split('\n') if len(x) > 0]
 
@@ -132,32 +133,38 @@ def fit(a, epochs):
                 print('Steps : {:d}, Gen Loss : {:4.3f}, Disc Loss : {:4.3f}, s/b : {:4.3f}'.
                       format(steps, reduced_loss_gen, reduced_loss_disc, time.time() - start_b))
 
-            if a.rank == 0 and steps % a.checkpoint_interval == 0:
+            if a.rank == 0 and steps % a.checkpoint_interval == 0 and steps != 0:
                 checkpoint_path = "{}/g_{:08d}".format(a.cps, steps)
                 save_checkpoint(generator, g_optim, h.learning_rate, steps, checkpoint_path)
                 checkpoint_path = "{}/d_{:08d}".format(a.cps, steps)
                 save_checkpoint(discriminator, d_optim, h.learning_rate, steps, checkpoint_path)
 
             if a.rank == 0 and steps % a.summary_interval == 0:
-                sw.add_scalar("gen_loss", reduced_loss_gen, steps)
-                sw.add_scalar("disc_loss", reduced_loss_disc, steps)
+                sw.add_scalar("training/gen_loss", reduced_loss_gen, steps)
+                sw.add_scalar("training/disc_loss", reduced_loss_disc, steps)
                 for i, (r, g) in enumerate(zip(losses_disc_r, losses_disc_g)):
-                    sw.add_scalar("disc{:d}_loss_r".format(i+1), r, steps)
-                    sw.add_scalar("disc{:d}_loss_g".format(i+1), g, steps)
+                    sw.add_scalar("training/disc{:d}_loss_r".format(i+1), r, steps)
+                    sw.add_scalar("training/disc{:d}_loss_g".format(i+1), g, steps)
                 for i, (r, g) in enumerate(zip(y_dhat_r, y_dhat_g)):
-                    sw.add_histogram("disc{:d}_r_output".format(i+1), r, steps)
-                    sw.add_histogram("disc{:d}_g_output".format(i+1), g, steps)
-                sw.add_histogram("gen_output", y_ghat, steps)
-                sw.add_audio('y', y[0], steps, h.sampling_rate)
-                sw.add_audio('y_hat', y_ghat[0], steps, h.sampling_rate)
+                    sw.add_histogram("training/disc{:d}_r_output".format(i+1), r, steps)
+                    sw.add_histogram("training/disc{:d}_g_output".format(i+1), g, steps)
+                sw.add_histogram("training/gen_output", y_ghat, steps)
+                sw.add_audio('training/y', y[0], steps, h.sampling_rate)
+                sw.add_audio('training/y_hat', y_ghat[0], steps, h.sampling_rate)
 
-            if a.rank == 0 and steps % a.validation_interval == 0: # & steps != 0:
+            if a.rank == 0 and steps % a.validation_interval == 0: # and steps != 0:
                 for i, batch in enumerate(valid_loader):
                     x, y, _ = batch
                     y_ghat = generator(x.to(device))
 
-                    sw.add_audio('validation/y', y[0], steps, h.sampling_rate)
-                    sw.add_audio('validation/y_hat', y_ghat[0], steps, h.sampling_rate)
+                    sw.add_audio('validation/y_{}'.format(i), y[0], steps, h.sampling_rate)
+                    sw.add_audio('validation/y_hat_{}'.format(i), y_ghat[0], steps, h.sampling_rate)
+
+                    # print(plot_spectrogram(x[i]))
+                    sw.add_figure('validation/y_spec_{}'.format(i), plot_spectrogram(x[0]), steps)
+                    y_hat_spec = mel_spectrogram(y_ghat.detach().cpu().numpy()[0][0], h.n_fft, h.num_mels, h.sampling_rate, h.hop_size, h.win_size,
+                              h.fmin, h.fmax, center=False)
+                    sw.add_figure('validation/y_hat_spec_{}'.format(i), plot_spectrogram(y_hat_spec), steps)
                     if i == 4:
                         break
 

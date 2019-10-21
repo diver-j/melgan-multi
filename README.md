@@ -7,7 +7,7 @@ This implementation includes **distributed** support and uses the
 [LJSpeech dataset](https://keithito.com/LJ-Speech-Dataset/).
 
 ## Pre-requisites
-1. NVIDIA GPU(highly recommended) + CUDA cuDNN
+1. NVIDIA GPU + CUDA cuDNN
 2. Python >= 3.5
 3. PyTorch == 1.2
 4. Clone this repository.
@@ -30,7 +30,11 @@ Tensorboard logs will be saved in `cp_melgan/logs`
 Training code detects all GPUs and sets them automatically. 
 
 ## Generated Sample Audio
-Coming soon..
+1. Sample audio can be heard on the tensorboard.
+![validation_audio](./validation_audio.png)
+2. Generated spectrograme can be seen on the tensorboard.
+![validation_audio](./validation_spectrogram.png)
+3. I will commit a inference code soon.
 
 ## Pre-trained model
 Coming soon..
