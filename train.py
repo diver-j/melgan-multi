@@ -149,22 +149,22 @@ def fit(a, epochs):
                     sw.add_histogram("training/disc{:d}_r_output".format(i+1), r, steps)
                     sw.add_histogram("training/disc{:d}_g_output".format(i+1), g, steps)
                 sw.add_histogram("training/gen_output", y_ghat, steps)
-                sw.add_audio('training/gt/y', y[0], steps, h.sampling_rate)
-                sw.add_audio('training/predicted/y_hat', y_ghat[0], steps, h.sampling_rate)
+                sw.add_audio('training_gt/y', y[0], steps, h.sampling_rate)
+                sw.add_audio('training_predicted/y_hat', y_ghat[0], steps, h.sampling_rate)
 
             if a.rank == 0 and steps % a.validation_interval == 0: # and steps != 0:
                 for i, batch in enumerate(valid_loader):
                     x, y, _ = batch
                     y_ghat = generator(x.to(device))
 
-                    sw.add_audio('validation/gt/y_{}'.format(i), y[0], steps, h.sampling_rate)
-                    sw.add_audio('validation/predicted/y_hat_{}'.format(i), y_ghat[0], steps, h.sampling_rate)
+                    sw.add_audio('validation_gt/y_{}'.format(i), y[0], steps, h.sampling_rate)
+                    sw.add_audio('validation_predicted/y_hat_{}'.format(i), y_ghat[0], steps, h.sampling_rate)
 
                     # print(plot_spectrogram(x[i]))
-                    sw.add_figure('validation/gt/y_spec_{}'.format(i), plot_spectrogram(x[0]), steps)
+                    sw.add_figure('validation_gt/y_spec_{}'.format(i), plot_spectrogram(x[0]), steps)
                     y_hat_spec = mel_spectrogram(y_ghat.detach().cpu().numpy()[0][0], h.n_fft, h.num_mels, h.sampling_rate, h.hop_size, h.win_size,
                               h.fmin, h.fmax, center=False)
-                    sw.add_figure('validation/predicted/y_hat_spec_{}'.format(i), plot_spectrogram(y_hat_spec), steps)
+                    sw.add_figure('validation_predicted/y_hat_spec_{}'.format(i), plot_spectrogram(y_hat_spec), steps)
                     if i == 4:
                         break
 
