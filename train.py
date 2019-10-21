@@ -189,10 +189,10 @@ def main():
     parser.add_argument('--cp_g', default='') # ex) cp_mgt_01/g_100.pth
     parser.add_argument('--cp_d', default='') # ex) cp_mgt_01/d_100.pth
     parser.add_argument('--config', default='hparams.json')
-    parser.add_argument('--training_epochs', default=500, type=int)
+    parser.add_argument('--training_epochs', default=1500, type=int)
     parser.add_argument('--checkpoint_interval', default=5000, type=int)
-    parser.add_argument('--summary_interval', default=50, type=int)
-    parser.add_argument('--validation_interval', default=500, type=int)
+    parser.add_argument('--summary_interval', default=100, type=int)
+    parser.add_argument('--validation_interval', default=1000, type=int)
 
     a = parser.parse_args()
 
