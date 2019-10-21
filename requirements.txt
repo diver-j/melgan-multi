@@ -3,3 +3,4 @@ numpy
 librosa
 scipy
 tensorboardX
+matplotlib

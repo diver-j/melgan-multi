@@ -119,7 +119,7 @@ def fit(a, epochs):
             g_optim.step()
 
             d_optim.zero_grad()
-            y_ghat = generator(x)
+            y_ghat = y_ghat.detach()
             y_dhat_r, y_dhat_g, _, _ = discriminator(y, y_ghat)
             loss_disc, losses_disc_r, losses_disc_g = discriminator_loss(y_dhat_r, y_dhat_g)
             if h.num_gpus > 1:
