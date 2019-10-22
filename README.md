@@ -36,8 +36,8 @@ Training code detects all GPUs and sets them automatically.
 
 ## Generated Sample Audio
 1. Current Samples (75K Steps)
-- [Sample #1](./samples/generated01.wav)
-- [Sample #2](./samples/generated02.wav)
+- [Sample #1](https://github.com/diver-j/melgan-multi/blob/master/samples/generated01.wav)
+- [Sample #2](https://github.com/diver-j/melgan-multi/blob/master/samples/generated02.wav)
  
 2. Sample audio can be heard on the tensorboard.
 ![validation_audio](./validation_audio.png)
