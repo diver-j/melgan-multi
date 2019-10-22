@@ -21,7 +21,7 @@ This implementation includes **distributed** support and uses the
 
 
 ## Training
-1. `python train.py --config config.json`
+1. `python train.py --config=config.json --cps=cp_melgan`
 
 Default checkpoint directory is `cp_melgan`
 
@@ -29,7 +29,7 @@ Tensorboard logs will be saved in `cp_melgan/logs`
 
 
 ## Multi-GPU (distributed) Training
-1. `python distributed.py --config config.json`
+1. `python distributed.py --config=config.json --args_str="--cps=cp_melgan"`
 
 Training code detects all GPUs and sets them automatically. 
 

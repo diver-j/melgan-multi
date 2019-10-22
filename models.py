@@ -12,20 +12,30 @@ def get_padding(kernel_size, dilation=1):
 class ResBlock(torch.nn.Module):
     def __init__(self, in_channels, out_channels):
         super(ResBlock, self).__init__()
-        self.convs = nn.ModuleList([
+        self.convs1 = nn.ModuleList([
             weight_norm(Conv1d(in_channels, out_channels, 3, 1, dilation=1,
                                padding=get_padding(3, 1))),
             weight_norm(Conv1d(in_channels, out_channels, 3, 1, dilation=3,
                                padding=get_padding(3, 3))),
             weight_norm(Conv1d(in_channels, out_channels, 3, 1, dilation=9,
-                               padding=get_padding(3, 9))),
+                               padding=get_padding(3, 9)))
+        ])
+        self.convs2 = nn.ModuleList([
+            weight_norm(Conv1d(in_channels, out_channels, 3, 1, dilation=1,
+                               padding=1)),
+            weight_norm(Conv1d(in_channels, out_channels, 3, 1, dilation=1,
+                               padding=1)),
+            weight_norm(Conv1d(in_channels, out_channels, 3, 1, dilation=1,
+                               padding=1))
         ])
 
     def forward(self, x):
-        for l in self.convs:
+        for c1, c2 in zip(self.convs1, self.convs2):
             x_p = x
-            x = l(x)
             x = F.leaky_relu(x)
+            x = c1(x)
+            x = F.leaky_relu(x)
+            x = c2(x)
             x = x + x_p
         return x
 
@@ -51,8 +61,10 @@ class Generator(torch.nn.Module):
     def forward(self, x):
         x = self.conv_pre(x)
         for i in range(4):
+            x = F.leaky_relu(x)
             x = self.ups[i](x)
             x = self.resblocks[i](x)
+        x = F.leaky_relu(x)
         x = self.conv_post(x)
         x = torch.tanh(x)
 
@@ -82,6 +94,7 @@ class Discriminator(torch.nn.Module):
             x = F.leaky_relu(x)
             fmap.append(x)
         x = self.conv_post1(x)
+        x = F.leaky_relu(x)
         fmap.append(x)
         x = self.conv_post2(x)
         fmap.append(x)
