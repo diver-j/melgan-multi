@@ -57,7 +57,7 @@ def mel_spectrogram(y, n_fft, num_mels, sampling_rate, hop_size, win_size, fmin,
 
 class MelDataset(torch.utils.data.Dataset):
     def __init__(self, training_files, segment_size, n_fft, num_mels,
-                 hop_size, win_size, sampling_rate,  fmin, fmax, split=True, shuffle=True):
+                 hop_size, win_size, sampling_rate,  fmin, fmax, split=True, shuffle=True, n_cache_reuse=2):
         self.audio_files = training_files
         random.seed(1234)
         if shuffle:
@@ -73,7 +73,7 @@ class MelDataset(torch.utils.data.Dataset):
         self.fmin = fmin
         self.fmax = fmax
         self.cached_wav = None
-        self.n_cache_reuse = 2
+        self.n_cache_reuse = n_cache_reuse
         self._cache_ref_count = 0
 
     def __getitem__(self, index):

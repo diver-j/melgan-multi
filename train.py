@@ -83,7 +83,8 @@ def fit(a, epochs):
                                   sampler=None,
                                   batch_size=1,
                                   pin_memory=False,
-                                  drop_last=True)
+                                  drop_last=True,
+                                  n_cache_reuse=0)
 
     if a.rank == 0:
         os.makedirs(a.cps, exist_ok=True)
