@@ -78,13 +78,12 @@ def fit(a, epochs):
 
     if a.rank == 0:
         validset = MelDataset(validation_files, h.segment_size, h.n_fft, h.num_mels,
-                            h.hop_size, h.win_size, h.sampling_rate, h.fmin, h.fmax, False, False)
+                            h.hop_size, h.win_size, h.sampling_rate, h.fmin, h.fmax, False, False, n_cache_reuse=0)
         valid_loader = DataLoader(validset, num_workers=1, shuffle=False,
                                   sampler=None,
                                   batch_size=1,
                                   pin_memory=False,
-                                  drop_last=True,
-                                  n_cache_reuse=0)
+                                  drop_last=True)
 
     if a.rank == 0:
         os.makedirs(a.cps, exist_ok=True)
