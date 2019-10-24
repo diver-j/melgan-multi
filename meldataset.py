@@ -73,7 +73,7 @@ class MelDataset(torch.utils.data.Dataset):
         self.fmin = fmin
         self.fmax = fmax
         self.cached_wav = None
-        self.n_cache_reuse = 0
+        self.n_cache_reuse = 2
         self._cache_ref_count = 0
 
     def __getitem__(self, index):
