@@ -22,8 +22,7 @@ def load_checkpoint(checkpoint_path, model, optimizer):
     checkpoint_dict = torch.load(checkpoint_path, map_location='cpu')
     iteration = checkpoint_dict['iteration']
     optimizer.load_state_dict(checkpoint_dict['optimizer'])
-    model_for_loading = checkpoint_dict['model']
-    model.load_state_dict(model_for_loading.state_dict())
+    model.load_state_dict(checkpoint_dict['model'])
     print("Loaded checkpoint '{}' (iteration {})" .format(
           checkpoint_path, iteration))
     return model, optimizer, iteration
@@ -55,7 +54,7 @@ def fit(a, epochs):
     steps = 0
     if a.cp_g != "" and  a.cp_d != "":
         generator, g_optim, steps = load_checkpoint(a.cp_g, generator, g_optim)
-        discriminator, d_optim, steps = load_checkpoint(a.cp_d, generator, g_optim)
+        discriminator, d_optim, steps = load_checkpoint(a.cp_d, discriminator, d_optim)
         steps += 1
 
     with open(a.input_train_metafile, 'r', encoding='utf-8') as fi:
@@ -129,7 +128,7 @@ def fit(a, epochs):
             loss_disc.backward()
             d_optim.step()
 
-            if a.rank == 0 and steps % 1 == 0:
+            if a.rank == 0 and steps % a.stdout_interval == 0:
                 print('Steps : {:d}, Gen Loss : {:4.3f}, Disc Loss : {:4.3f}, s/b : {:4.3f}'.
                       format(steps, reduced_loss_gen, reduced_loss_disc, time.time() - start_b))
 
@@ -189,7 +188,8 @@ def main():
     parser.add_argument('--cp_g', default='') # ex) cp_mgt_01/g_100.pth
     parser.add_argument('--cp_d', default='') # ex) cp_mgt_01/d_100.pth
     parser.add_argument('--config', default='hparams.json')
-    parser.add_argument('--training_epochs', default=1500, type=int)
+    parser.add_argument('--training_epochs', default=5000, type=int)
+    parser.add_argument('--stdout_interval', default=1, type=int)
     parser.add_argument('--checkpoint_interval', default=5000, type=int)
     parser.add_argument('--summary_interval', default=100, type=int)
     parser.add_argument('--validation_interval', default=1000, type=int)
@@ -202,7 +202,7 @@ def main():
     global h
     json_config = json.loads(data)
     h = AttrDict(json_config)
-    build_env(a.config, 'hparams.json', a.cps)
+    build_env(a.config, 'config.json', a.cps)
 
     torch.manual_seed(h.seed)
     global device
