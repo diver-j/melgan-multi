@@ -36,12 +36,10 @@ Training code detects all GPUs and sets them automatically.
 
 ## Generated Sample Audio
 1. Current Samples (489K Steps)
-- [Sample #1](./samples/generated01.wav)
-- [Sample #2](./samples/generated02.wav)
 
-    (If it doesn't play in your web browser, save it to your local disk and play it.)
+    [Samples](https://diver-j.github.io/)
 
-2. Sample audio can be heard on the tensorboard.
+2. Sample audio can be heard on the tensorboard also.
 ![validation_audio](./validation_audio.png)
 
 
