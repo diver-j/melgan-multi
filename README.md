@@ -35,7 +35,7 @@ Training code detects all GPUs and sets them automatically.
 
 
 ## Generated Sample Audio
-1. Current Samples (75K Steps)
+1. Current Samples (489K Steps)
 - [Sample #1](./samples/generated01.wav)
 - [Sample #2](./samples/generated02.wav)
 
