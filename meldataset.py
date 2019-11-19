@@ -42,17 +42,17 @@ def spectral_de_normalize(magnitudes):
 
 
 def mel_spectrogram(y, n_fft, num_mels, sampling_rate, hop_size, win_size, fmin, fmax, center=False):
-    assert(np.min(y.data) >= -1)
-    assert(np.max(y.data) <= 1)
+    assert(np.min(y.data) >= -1.)
+    assert(np.max(y.data) <= 1.)
 
     y = np.pad(y, (int((n_fft-hop_size)/2), int((n_fft-hop_size)/2))
                , 'constant', constant_values=(0, 0))
     spec = librosa.feature.melspectrogram(y, hop_length=hop_size, win_length=win_size, center=center, power=1,
-                                          sr=sampling_rate, n_fft=n_fft, n_mels=num_mels, fmin=fmin, fmax=fmax)
+                                          sr=sampling_rate, n_fft=n_fft, n_mels=num_mels, fmin=fmin, fmax=fmax,
+                                          norm=1)
 
-    magnitudes = np.abs(spec)
-    mel_output = spectral_normalize(magnitudes)
-    return mel_output
+    spec = spectral_normalize(spec)
+    return spec
 
 
 class MelDataset(torch.utils.data.Dataset):
