@@ -149,8 +149,8 @@ def discriminator_loss(disc_real_outputs, disc_generated_outputs):
     r_losses = []
     g_losses = []
     for dr, dg in zip(disc_real_outputs, disc_generated_outputs):
-        real_loss = torch.mean((torch.ones_like(dg[0]) - dr[0])**2)
-        generated_loss = torch.mean((dg[0])**2)
+        real_loss = torch.mean((1 - dr)**2)
+        generated_loss = torch.mean(dg**2)
         total_disc_loss = real_loss + generated_loss
         loss += total_disc_loss
         r_losses.append(real_loss.item())
@@ -162,7 +162,7 @@ def discriminator_loss(disc_real_outputs, disc_generated_outputs):
 def generator_loss(disc_generated_outputs):
     loss = 0
     for dg in disc_generated_outputs:
-        loss += torch.mean((torch.ones_like(dg[0]) - dg[0])**2)
+        loss += torch.mean((1 - dg)**2)
 
     return loss
 
